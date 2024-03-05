@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login Page</title>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+</head>
+
+<body>
+    <div x-data="{ username: '', password: '', loginSuccess: false, loginError: false }">
+        <form @submit.prevent="loginError = false; loginSuccess = false; fetch('http://127.0.0.1:8000/api/token/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({username: username, password: password})
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Login failed');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+        loginSuccess = true;
+        // Optionally, store the tokens securely
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        loginError = true;
+    })">
+            <input x-model="username" type="text" placeholder="Username" required>
+            <input x-model="password" type="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+
+        <template x-if="loginSuccess">
+            <p>Login successful!</p>
+        </template>
+
+        <template x-if="loginError">
+            <p>Login failed. Please check your credentials.</p>
+        </template>
+    </div>
+</body>
+
+</html>
